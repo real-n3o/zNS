@@ -4,7 +4,7 @@
   SPDX-License-Identifier: MIT
 */
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import { IERC721Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
@@ -13,14 +13,15 @@ import { SafeMathUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/m
 import { SafeERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-import { ZNSDomain } from "./ZNSDomain.sol";
-import { ZNSRegistrar } from "./ZNSRegistrar.sol";
+import { IZNSStaking } from "./IZNSStaking.sol";
+import { ZNSDomain } from "../domain/ZNSDomain.sol";
+import { ZNSRegistrar } from "../registrar/ZNSRegistrar.sol";
 
 /**
  * @title ZNSStaking
  * @dev Staking contract for Zero Name Service (ZNS) domains.
 */
-contract ZNSStaking is Initializable, ReentrancyGuardUpgradeable {
+contract ZNSStaking is IZNSStaking, Initializable, ReentrancyGuardUpgradeable {
   using SafeMathUpgradeable for uint256;
 
   mapping(bytes32 => uint256) public stakes;
@@ -78,7 +79,6 @@ contract ZNSStaking is Initializable, ReentrancyGuardUpgradeable {
     stakes[domainHash] = domainCost;
     uint256 tokenId = uint256(domainHash);
 
-    // Emit event
     emit StakeAdded(domainHash, domainCost, znsDomain.ownerOf(tokenId));
   }
 
@@ -102,10 +102,8 @@ contract ZNSStaking is Initializable, ReentrancyGuardUpgradeable {
     // Transfer tokens back to domain owner
     SafeERC20Upgradeable.safeTransfer(stakingToken, beneficiary, stakedAmount);
 
-    // Emit event
     emit StakeWithdrawn(domainHash, stakedAmount, beneficiary);
   }
 
-  // For storage layout future-proofing
   uint256[49] private __gap;
 }
