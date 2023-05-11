@@ -7,18 +7,19 @@
   SPDX-License-Identifier: MIT
 */
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import { SafeMathUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { EnumerableSetUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 
-import { ZNSDomain } from "./ZNSDomain.sol";
-import { ZNSStaking } from "./ZNSStaking.sol";
-import { ZEROToken } from "./ZEROToken.sol";
+import { IZNSRegistrar } from "./IZNSRegistrar.sol";
+import { ZNSDomain } from "../domain/ZNSDomain.sol";
+import { ZNSStaking } from "../staking/ZNSStaking.sol";
+import { ZEROToken } from "../token/ZEROToken.sol";
 
-contract ZNSRegistrar is Initializable, ReentrancyGuardUpgradeable {
+contract ZNSRegistrar is IZNSRegistrar, Initializable, ReentrancyGuardUpgradeable {
   using SafeMathUpgradeable for uint256;
   using EnumerableSetUpgradeable for EnumerableSetUpgradeable.Bytes32Set;
 
@@ -138,7 +139,6 @@ contract ZNSRegistrar is Initializable, ReentrancyGuardUpgradeable {
     znsDomain.burn(tokenId, msg.sender);
     // NOTE: May need to move this into ZNSStaking contract but need to determine AC
 
-    // Emit the event
     emit DomainDestroyed(domainHash, domainName);
   }
 
@@ -189,7 +189,7 @@ contract ZNSRegistrar is Initializable, ReentrancyGuardUpgradeable {
     * @param domainHash The hash of the domain.
     * @param owner The new owner address to set for the domain.
   */
-  function setDomainOwner(bytes32 domainHash, address owner) onlyOwner(domainHash) internal {
+  function setDomainOwner(bytes32 domainHash, address owner) onlyOwner(domainHash) external {
       _domains[domainHash].owner = owner;
   }
 
@@ -207,7 +207,7 @@ contract ZNSRegistrar is Initializable, ReentrancyGuardUpgradeable {
     * @param domainHash The hash of the domain.
     * @param domain The new domain contract address to set for the domain.
   */
-  function setDomainContract(bytes32 domainHash, address domain) onlyOwner(domainHash) internal {
+  function setDomainContract(bytes32 domainHash, address domain) onlyOwner(domainHash) external {
       _domains[domainHash].domain = domain;
   }
 
@@ -225,7 +225,7 @@ contract ZNSRegistrar is Initializable, ReentrancyGuardUpgradeable {
     * @param domainHash The hash of the domain.
     * @param resolver The new resolver contract address to set for the domain.
   */
-  function setResolverContract(bytes32 domainHash, address resolver) onlyOwner(domainHash) internal {
+  function setResolverContract(bytes32 domainHash, address resolver) onlyOwner(domainHash) external {
       _domains[domainHash].resolver = resolver;
   }
 

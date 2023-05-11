@@ -4,20 +4,21 @@
   SPDX-License-Identifier: MIT
 */
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
 import { ERC721Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import { CountersUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { SafeMathUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 
-import { ZNSRegistrar } from "./ZNSRegistrar.sol";
+import { IZNSDomain } from "./IZNSDomain.sol";
+import { ZNSRegistrar } from "../registrar/ZNSRegistrar.sol";
 
 /**
  * @title ZNSDomain
  * @dev ERC721 contract for Zero Name Service (ZNS) domains.
 */
-contract ZNSDomain is Initializable, ERC721Upgradeable {
+contract ZNSDomain is IZNSDomain, Initializable, ERC721Upgradeable {
   using SafeMathUpgradeable for uint256;
   using CountersUpgradeable for CountersUpgradeable.Counter;
   CountersUpgradeable.Counter private _domainIds;
